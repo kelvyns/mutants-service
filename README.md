@@ -123,15 +123,35 @@ $java -jar ./target/mutants-service-0.1.0.jar
 - La secuencia de DNA es estudiada primero en forma vertical de izquierda a derecha, luego horizontal de arriba a abajo,
 luego inclinada de izquierda a derecha de abajo para arriba y de arriba para abajo.
 - Hay dos servicios expuestos para poder ver listado de ADN estudiados y para poder limpiar la Base de Datos, si bien esto no es una buena práctica, permitirá al evaluador probar mas fácil, comparar y limpiar la BD rápidamente (Para verlos hay que entrar en la app :P).
+- En cuanto a el punto "Tener en cuenta que la API puede recibir fluctuaciones agresivas de tráfico 
+- (Entre 100 y 1 millón de peticiones por segundo)"; Hay varias consideraciones a tener en cuenta, 
+  no se puede tener una respuesta concreta con tan poca información:
+  Asumiendo que POST /mutant es el endpoint que mas llamadas recibe entonces hay que considerar varios 
+  factores. Si bien es cierto que el performance del código juega un papel importante, la capacidad de 
+  procesar 1 millón de transacciones por segundo va mas allá del código, probablemente se necesiten 
+  múltiples hosts que sean capaces de manejar esa capacidad de transacciones, también debe revisarse 
+  la arquitectura y hacerse preguntas como: 
+¿La respuesta de mutant debe ser real time o puede encolarse?
+¿Recibo request duplicados en los cuales una cache podría ser útil?
+¿Quienes son mis usuarios, Donde están?
+¿Es posible añadir un rate limit por usuario el cual simplemente aplique throttling a clientes que 
+excedan un limite establecido de llamadas?
 
+Entender la naturaleza de las llamadas juega un papel importante en las estrategias a aplicarse, 
+por ejemplo: si no es necesario que sea real time entonces puede colocarse una cola que vaya 
+guardando las operaciones pendientes mientras los servidores están ocupados e ir procesando 
+en ese orden y notificar cuando la respuesta este lista. Si las operaciones deben ser rápidas 
+y no se pueden hacer de manera asíncrona entonces hay que desplegar una capacidad capaz de 
+soportar esta cantidad de transacciones (load balancers, múltiples hosts, database clusters,
+cache proxies, etc). También hay que entender el significado de 'agresivas', 
+¿es posible predecir un pico en las llamadas de alguna manera? ¿se puede aprovisionar 
+hardware de antemano o hay que monitorear de manera activa? No solo es desplegar una capacidad 
+capaz de procesar ese volumen de operaciones, también es importante entender en términos 
+de costo que tan rápido se puede aumentar o reducir esa capacidad cuando sea necesario.
 
 ----
 # Mejoras
 - Se utilizó para el logueo el plugging de log de java, como mejora quedo pendiente externalizar el level de loggeo  y utilizar log4j, sin embargo esta prepara la interface de loggerManager para conectarse después con otro componente de manera rápida.
-- Test con Junit y estudiar la cobertura como minimo al 70%
-- En cuanto al nivel de procesamiento, se debe adquirir un servidor que soporte alta cantidad de peticiones, se deben definir estrategias, como cuantas peticiones dejar hacer por usuario según su ip, se puede tener servidores redundantes con load balancer, se debe evaluar la cantidad soportada de consultas simultáneas en la BD. Por parte de la aplicación se podría estudiar colocar un manejo de colas ActiveMq en donde dejé en la cola la insertion del DNA y continúe respondiendo 200 o 403, se puede crear una tabla alterna que guarde las estadísticas de tal manera que no se consulte a la tabla que tiene millones de registros, sino que se consulte a una tabla con un único registro estadístico, que se actualice a medida que llegan las peticiones de consulta de si el humano es mutante o no. Hay múltiples maneras de mejorar el performance y el alto consumo del aplicativo que dependerá de la robustes del server que sirva de hosteo. En mi caso el server posee limitantes espacio y peticiones, por lo que puede tornar lento o causar caídas con volúmenes altos de peticiones.
-
-
 
 Licencia
 ----
