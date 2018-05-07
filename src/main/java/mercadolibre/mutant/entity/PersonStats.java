@@ -16,7 +16,7 @@ public class PersonStats {
 	 * @param count_mutant_dna
 	 * @param count_human_dna
 	 */
-	public PersonStats(double count_mutant_dna, double count_human_dna) {
+	public PersonStats(double count_human_dna, double count_mutant_dna) {
 		super();
 		this.count_mutant_dna = count_mutant_dna;
 		this.count_human_dna = count_human_dna;

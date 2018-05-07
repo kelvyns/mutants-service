@@ -13,10 +13,10 @@ public class Person {
 	/**
 	 * @param dna
 	 */
-	public Person(String dna) {
+	public Person(String dna, boolean isMuntat) {
 		super();
 		this.dna = dna;
-		this.isMuntat = false;
+		this.isMuntat = isMuntat;
 	}
 
 	/**

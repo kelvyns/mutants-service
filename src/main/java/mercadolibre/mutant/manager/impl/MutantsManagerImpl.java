@@ -1,5 +1,4 @@
 package mercadolibre.mutant.manager.impl;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,7 @@ public class MutantsManagerImpl implements MutantsManager {
 	@Override
 	public boolean isMutant(String[] dna) throws InvalidDnaExeption, RepositoryExeption {
 		int matches = 0;
+		boolean isMutant = false;
 		// validate dna
 		validateDna(dna);
 		
@@ -59,21 +59,20 @@ public class MutantsManagerImpl implements MutantsManager {
 				if (matches < MATCHES) {
 					// oblique to right /
 					matches = obliqueAnalyze((dna.length-1), (dna.length-1), -1, matches, dna);
-					if ( matches < MATCHES) {
-						return false;
-					}
 				}
 			}
-		}		
-		savePersonInBD(String.join("-", dna));
-		return true;
+		}
+		isMutant = matches >= MATCHES;
+		savePersonInBD(String.join("-", dna), isMutant);
+		return isMutant;
 	}
 	
-	private void savePersonInBD(String dnaString) throws RepositoryExeption {
+	private void savePersonInBD(String dnaString, boolean isMutant) throws RepositoryExeption {
 		try {
 			Person p = personRepository.findByDna(dnaString);
-			if( !(p!=null && dnaString.equalsIgnoreCase(p.getDna()))) {
+			if( p==null || !dnaString.equalsIgnoreCase(p.getDna()) ) {
 				// If the person is not in databa, save person
+				p = new Person(dnaString, isMutant);
 				personRepository.save(p);
 			}
 		} catch (Exception e) {
@@ -265,95 +264,4 @@ public class MutantsManagerImpl implements MutantsManager {
 		}
 		return false;
 	}
-
-	/*
-	 * A B K R X O A X N U D T P E T C K A P E T R T A A B N U X T A Q P E D T
-	 */
-
-	/*
-	 * 
-	 * [0][1]!= [3][4] [0][1]!= [2][3] [0][1]!= [1][2]
-	 * 
-	 * 4 -> 1 5 -> 2 6 -> 3
-	 * 
-	 * [0][1] != [3][4] [0][1] != [2][3] [0][1] != [1][2]
-	 * 
-	 */
-	/*
-	 A   B   K   R  X  O
-	 A   X   N   U  D  T 
-	 P   E   T   C  K  A
-	 P   E   T   R  T  A
-	 A   B   N   U  X  T
-	 A   Q   P   E  D  T
-	 */
-	public static void main(String[] args) throws Exception {
-		System.out.println(new Date());
-
-		MutantsManagerImpl mutantsManager = new MutantsManagerImpl();
-		
-
-		// cadena invalida
-		//String[] dna = {"ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTX"};
-		// cadena valida en horizontal
-		/*
-		String[] dna = { "ATGCGA", 
-				         "CAGTGG", 
-				         "TTCTCT", 
-				         "AAAAGG", 
-				         "CCCCAA", 
-				         "TCACTG" };
-		*/
-		// cadena valida en vertical
-		/*
-		String[] dna = {"ATGCGA",
-						"CATTAG",
-						"TTATGA",
-						"GAAATG",
-						"TATCTG",
-						"TCACTG"};
-		*/
-		// cadena valida en obliqua right
-		/*
-		String[] dna = {"ATGCGA",
-						"CAGTAA",
-						"TTGAGG",
-						"GAAGAA",
-						"TATCGT",
-						"TCACTG"};
-		*/
-		// cadena valida en obliqua left
-		// 
-		String[] dna = {"ATGCGA",
-						"CAGGAA",
-						"TTATGG",
-						"GAAGGG",
-						"TATGTG",
-						"TCGCTA"};
-		
-		/*
-		String[] dna = {"AAACCCGGGTTT","TTTGGGCCCAAA","AAACCCGGGTTT","TTTGGGCCCAAA","AAACCCGGGTTT","TTTGGGCCCAAA",
-				        "AAACCCGGGTTT","TTTGGGCCCAAA","AAACCCGGGTTT","TTTGGGCCCAAA","AAACCCGGGTTT","TTTGGGCCCAAA"};
-		*/
-		for (int i = 0; i < dna.length; i++) {
-			String val = "";
-			for (int j = 0; j < dna.length; j++) {
-				val = dna[i].charAt(j) + val;
-				
-				System.out.println(val);
-			}
-		}
-
-		//String [] splitDna = String.join("-", dna).split("-");
-		for (String string : dna) {
-			System.out.println(string);
-		}
-		
-		boolean isMutant = mutantsManager.isMutant(dna);
-		System.out.println(isMutant);
-		
-		System.out.println(new Date());
-	}
-
-	
 }
