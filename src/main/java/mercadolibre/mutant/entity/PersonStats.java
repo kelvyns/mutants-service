@@ -20,7 +20,7 @@ public class PersonStats {
 		super();
 		this.count_mutant_dna = count_mutant_dna;
 		this.count_human_dna = count_human_dna;
-		this.ratio = Math.round( ((count_human_dna != 0) ? count_mutant_dna / count_human_dna : 0) );
+		this.ratio = ((count_human_dna != 0) ? (Math.round((count_mutant_dna / count_human_dna) * 10000.0) / 10000.0) : 0);
 	}
 	
 	/**
