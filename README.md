@@ -122,8 +122,7 @@ $java -jar ./target/mutants-service-0.1.0.jar
 
  - Se realizaron los test con Junit4 con JaCoCo para estudiar la cobertura de los test
 
-[![N|Solid](https://github.com/kelvyns/mutants-service/coverage-mutant.jpg)](https://github.com/kelvyns/mutants-service)
-
+[![N|Solid](https://raw.githubusercontent.com/kelvyns/mutants-service/master/coverage-mutant.jpg)](https://github.com/kelvyns/mutants-service)
 ------
 
 # Consideraciones
