@@ -1,8 +1,9 @@
 package mercadolibre.mutant.controller;
 
 import java.util.List;
-import java.util.logging.Level;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import mercadolibre.mutant.entity.Person;
-import mercadolibre.mutant.manager.LoggerManager;
 import mercadolibre.mutant.repository.PersonRepository;
 
 
@@ -24,8 +24,8 @@ import mercadolibre.mutant.repository.PersonRepository;
 @RestController
 public class RepositoryController {
 	
-	@Autowired
-	private LoggerManager  loggerManager;
+	private static final Logger logger = LoggerFactory.getLogger(RepositoryController.class);
+	
 	
 	@Autowired
 	private PersonRepository personRepository;
@@ -41,7 +41,7 @@ public class RepositoryController {
 			personRepository.deleteAll();
 			response = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
-			loggerManager.doLog(Level.SEVERE, e.getMessage());
+			logger.error(e.getMessage());
 			response = new ResponseEntity<>(HttpStatus.CONFLICT);
 		}
         return response;
@@ -53,7 +53,7 @@ public class RepositoryController {
 		try {
 			list = personRepository.findAll();
 		} catch (Exception e) {
-			loggerManager.doLog(Level.SEVERE, e.getMessage());
+			logger.error(e.getMessage());
 		}
         return list;
     }

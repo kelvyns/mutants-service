@@ -1,5 +1,7 @@
 package mercadolibre.mutant.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,6 @@ import mercadolibre.mutant.exception.InvalidDnaExeption;
 import mercadolibre.mutant.exception.ManagerExeption;
 import mercadolibre.mutant.exception.RepositoryExeption;
 import mercadolibre.mutant.exception.ServiceExeption;
-import mercadolibre.mutant.manager.LoggerManager;
 import mercadolibre.mutant.manager.MutantsManager;
 import mercadolibre.mutant.manager.StatsManager;
 import mercadolibre.mutant.service.ApplicationService;
@@ -25,8 +26,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Autowired
 	private StatsManager  statsManager;
 	
-	@Autowired
-	private LoggerManager  loggerManager;
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationServiceImpl.class);
 	
 	/**
 	 * This method return true if the dna represent a mutant or false is not a mutant
@@ -40,10 +40,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public ResponseEntity<String> isMutant(DnaContent dna) throws ServiceExeption, InvalidDnaExeption, RepositoryExeption {
 		ResponseEntity<String> response = null;
 		if( mutantsManager.isMutant(dna.getDna()) ) {
-			loggerManager.doLog("HttpStatus: 200");
+			logger.info("HttpStatus: 200");
 			response = new ResponseEntity<>(HttpStatus.OK);
 		} else {
-			loggerManager.doLog("HttpStatus: 403");
+			logger.info("HttpStatus: 403");
 			response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		return response;
@@ -58,7 +58,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	 * @throws RepositoryExeption 
 	 */
 	@Override
-	public PersonStats getStats() throws ManagerExeption, RepositoryExeption {
+	public PersonStats getStats() throws RepositoryExeption {
 		PersonStats personStats = statsManager.getStats();
 		return personStats;
 	}

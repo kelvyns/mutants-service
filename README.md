@@ -2,7 +2,7 @@
 
 ---
 
-[![N|Solid](https://i.ytimg.com/vi/54dCeUwn1CI/maxresdefault.jpg)](https://nodesource.com/products/nsolid)
+[![N|Solid](https://i.ytimg.com/vi/54dCeUwn1CI/maxresdefault.jpg)](https://github.com/kelvyns/mutants-service)
 
 El proyecto consiste en generar una API-REST que exponga dos servicios, uno te permite saber si una persona es humano o mutante basado en su ADN representado por una matriz de NxN caracteres y también un servicio que arroje estadísticas en función de los ADN estudiados, los cuales son mutantes y o no. 
 
@@ -15,6 +15,7 @@ El proyecto consiste en generar una API-REST que exponga dos servicios, uno te p
 - [Instalacion](#instalacion)
 - [Api](#api)
 - [Ejemplos](#ejemplos)
+- [Cobertura](#Cobertura)
 - [Consideraciones](#consideraciones)
 - [Mejoras](#mejoras)
 - [License](#license)
@@ -38,10 +39,12 @@ El proyecto consiste en generar una API-REST que exponga dos servicios, uno te p
  * [STS] - Ide de desarrollo
  * [CloudC9] - Servidor en la nube
  * [MongoBD] - Base de datos
- * [Logger] - api logs de java
  * [GitHub] - Repositorio y manual de uso
+ * [JUnit] - Framework para testing
+ * [Mockito] - Para Mocker servicios para testing
+ * [log4j] - Para manejo de logging
+ * [JaCoCo] - Para estudiar cobertura de los test unitarios
 
- 
 
 -------
 
@@ -98,21 +101,28 @@ $java -jar ./target/mutants-service-0.1.0.jar
 
 
 	1) SERVICIO: mutant 
-	REQUEST: [TYPE POST; HEADER Content-Type: application/json]
-	{
-	"dna": ["ATGCGA",
-		"CAGTGG",
-		"TCCCCT",
-		"ATAGGG",
-		"CCTAAA",
-		"TCATTG"
-	]}
-	RESPONSE: 200 - OK
+  	   REQUEST: [TYPE POST; HEADER Content-Type: application/json]
+    	{
+    	"dna": ["ATGCGA",
+    		"CAGTGG",
+    		"TCCCCT",
+    		"ATAGGG",
+    		"CCTAAA",
+    		"TCATTG"
+    	]}
+	   RESPONSE: 200 - OK
 	
 	2) SERVICIO: stats
-	RESPONSE: { "count_mutant_dna": 10, "count_human_dna": 2, "ratio": 5}	
+	   RESPONSE: 200 - OK 
+	{ "count_mutant_dna": 10, "count_human_dna": 2, "ratio": 5}	
 
+------
 
+# Cobertura
+
+ - Se realizaron los test con Junit4 con JaCoCo para estudiar la cobertura de los test
+
+[![N|Solid](https://github.com/kelvyns/mutants-service/coverage-mutant.jpg)](https://github.com/kelvyns/mutants-service)
 
 ------
 
@@ -124,36 +134,34 @@ $java -jar ./target/mutants-service-0.1.0.jar
 luego inclinada de izquierda a derecha de abajo para arriba y de arriba para abajo.
 - Hay dos servicios expuestos para poder ver listado de ADN estudiados y para poder limpiar la Base de Datos, si bien esto no es una buena práctica, permitirá al evaluador probar mas fácil, comparar y limpiar la BD rápidamente (Para verlos hay que entrar en la app :P).
 - En cuanto a el punto "Tener en cuenta que la API puede recibir fluctuaciones agresivas de tráfico 
-- (Entre 100 y 1 millón de peticiones por segundo)"; Hay varias consideraciones a tener en cuenta, 
+ (Entre 100 y 1 millón de peticiones por segundo)"; Hay varias consideraciones a tener en cuenta, 
   no se puede tener una respuesta concreta con tan poca información:
   Asumiendo que POST /mutant es el endpoint que mas llamadas recibe entonces hay que considerar varios 
   factores. Si bien es cierto que el performance del código juega un papel importante, la capacidad de 
   procesar 1 millón de transacciones por segundo va mas allá del código, probablemente se necesiten 
   múltiples hosts que sean capaces de manejar esa capacidad de transacciones, también debe revisarse 
-  la arquitectura y hacerse preguntas como: 
-¿La respuesta de mutant debe ser real time o puede encolarse?
-¿Recibo request duplicados en los cuales una cache podría ser útil?
-¿Quienes son mis usuarios, Donde están?
-¿Es posible añadir un rate limit por usuario el cual simplemente aplique throttling a clientes que 
-excedan un limite establecido de llamadas?
+  la arquitectura y hacerse preguntas como:
 
-Entender la naturaleza de las llamadas juega un papel importante en las estrategias a aplicarse, 
-por ejemplo: si no es necesario que sea real time entonces puede colocarse una cola que vaya 
-guardando las operaciones pendientes mientras los servidores están ocupados e ir procesando 
-en ese orden y notificar cuando la respuesta este lista. Si las operaciones deben ser rápidas 
-y no se pueden hacer de manera asíncrona entonces hay que desplegar una capacidad capaz de 
-soportar esta cantidad de transacciones (load balancers, múltiples hosts, database clusters,
-cache proxies, etc). También hay que entender el significado de 'agresivas', 
-¿es posible predecir un pico en las llamadas de alguna manera? ¿se puede aprovisionar 
-hardware de antemano o hay que monitorear de manera activa? No solo es desplegar una capacidad 
-capaz de procesar ese volumen de operaciones, también es importante entender en términos 
-de costo que tan rápido se puede aumentar o reducir esa capacidad cuando sea necesario.
+  ¿La respuesta de mutant debe ser real time o puede encolarse?
+  ¿Recibo request duplicados en los cuales una cache podría ser útil?
+  ¿Quienes son mis usuarios, Donde están?
+  ¿Es posible añadir un rate limit por usuario el cual simplemente aplique throttling a clientes que 
+  excedan un limite establecido de llamadas?
+
+  Entender la naturaleza de las llamadas juega un papel importante en las estrategias a aplicarse, por ejemplo: si no es necesario que sea real time entonces puede colocarse una cola que vaya guardando las operaciones pendientes mientras los servidores están ocupados e ir procesando en ese orden y notificar cuando la respuesta este lista. Si las operaciones deben ser rápidas y no se pueden hacer de manera asíncrona entonces hay que desplegar una capacidad capaz de soportar esta cantidad de transacciones (load balancers, múltiples hosts, database clusters, cache proxies, etc). También hay que entender el significado de 'agresivas', 
+  ¿es posible predecir un pico en las llamadas de alguna manera? ¿se puede aprovisionar 
+  hardware de antemano o hay que monitorear de manera activa? No solo es desplegar una capacidad 
+  capaz de procesar ese volumen de operaciones, también es importante entender en términos 
+  de costo que tan rápido se puede aumentar o reducir esa capacidad cuando sea necesario.
 
 ----
 # Mejoras
-- Se utilizó para el logueo el plugging de log de java, como mejora quedo pendiente externalizar el level de loggeo  y utilizar log4j, sin embargo esta prepara la interface de loggerManager para conectarse después con otro componente de manera rápida.
+- Dependiendo del estudio profundo del tema de las fluctuaciones agresivas, quedaria pendiente 
+  definir la estragia a seguir.
 
-Licencia
 ----
+
+# Licencia
+
 
 **Software libre**

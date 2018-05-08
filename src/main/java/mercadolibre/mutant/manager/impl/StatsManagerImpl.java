@@ -1,5 +1,6 @@
 package mercadolibre.mutant.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,9 @@ public class StatsManagerImpl implements StatsManager{
 	 * @throws RepositoryExeption 
 	 */
 	@Override
-	public PersonStats getStats() throws ManagerExeption, RepositoryExeption {
-		List <Person> humans = null;
-		List <Person> mutants = null;
+	public PersonStats getStats() throws RepositoryExeption {
+		List <Person> humans = new ArrayList<Person>();
+		List <Person> mutants = new ArrayList<Person>();
 		try {
 			humans = personRepository.findByIsMuntat(false);
 			mutants = personRepository.findByIsMuntat(true);

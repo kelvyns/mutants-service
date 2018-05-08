@@ -1,7 +1,6 @@
 package mercadolibre.mutant.manager;
 
 import mercadolibre.mutant.entity.PersonStats;
-import mercadolibre.mutant.exception.ManagerExeption;
 import mercadolibre.mutant.exception.RepositoryExeption;
 
 /**
@@ -15,8 +14,7 @@ public interface StatsManager {
 	 * This method get stasts 
 	 * 
 	 * @return PersonStats
-	 * @throws ManagerExeption
 	 * @throws RepositoryExeption 
 	 */
-	public PersonStats getStats() throws ManagerExeption, RepositoryExeption;
+	public PersonStats getStats() throws RepositoryExeption;
 }

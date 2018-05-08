@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import mercadolibre.mutant.entity.DnaContent;
 import mercadolibre.mutant.entity.PersonStats;
 import mercadolibre.mutant.exception.InvalidDnaExeption;
-import mercadolibre.mutant.exception.ManagerExeption;
 import mercadolibre.mutant.exception.RepositoryExeption;
 import mercadolibre.mutant.exception.ServiceExeption;
 
@@ -33,9 +32,8 @@ public interface ApplicationService {
 	 * 
 	 * @param  
 	 * @return PersonStats (mutants,humans totals and ratio)
-	 * @throws ManagerExeption ServiceExeption
 	 * @throws RepositoryExeption 
 	 * @throws InvalidDnaExeption
 	 */
-	public PersonStats getStats() throws ServiceExeption, ManagerExeption, RepositoryExeption;
+	public PersonStats getStats() throws ServiceExeption, RepositoryExeption;
 }
